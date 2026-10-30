@@ -1,0 +1,126 @@
+### ============================================================================
+### ORDENES DE TRABAJO - CASOS C-10, C-11, C-12, C-13, C-17
+### ============================================================================
+
+### 1. Iniciar sesión como RECEPCIÓN
+# @name loginRecepcion
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "recepcion@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 2. Iniciar sesión como MECÁNICO
+# @name loginMecanico
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "mecanico@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 3. Iniciar sesión como CLIENTE (Laura)
+# @name loginCliente
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 4. Consultar catálogo de estados (por posición) -> 200 OK
+# @no-cookie-jar
+GET http://localhost:8000/estados-orden
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 5. CASO C-10: Crear orden con 2 repuestos válidos -> 201 Created
+# @no-cookie-jar
+POST http://localhost:8000/ordenes
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Content-Type: application/json
+
+{
+  "vehiculo_id": 1,
+  "falla": "Ruido en suspensión y cambio de aceite",
+  "items": [
+    { "repuesto_id": 1, "cantidad": 1 },
+    { "repuesto_id": 2, "cantidad": 2 }
+  ]
+}
+
+###
+
+### 6. CASO C-10: Intento de crear orden con repuesto inexistente -> 409 Conflict
+# @no-cookie-jar
+POST http://localhost:8000/ordenes
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Content-Type: application/json
+
+{
+  "vehiculo_id": 1,
+  "falla": "Prueba repuesto inválido",
+  "items": [
+    { "repuesto_id": 9999, "cantidad": 1 }
+  ]
+}
+
+###
+
+### 7. Detalle de orden precargada sin N+1 -> 200 OK
+# @no-cookie-jar
+GET http://localhost:8000/ordenes/2
+Cookie: {{loginMecanico.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 8. CASO C-11: Mecánico intenta terminar orden 2 con stock insuficiente -> 409 Conflict
+# @no-cookie-jar
+POST http://localhost:8000/ordenes/2/terminar
+Cookie: {{loginMecanico.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 9. CASO C-13: Laura cancela su propia orden 1 -> 200 OK
+# @no-cookie-jar
+POST http://localhost:8000/ordenes/1/cancelar
+Cookie: {{loginCliente.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 10. CASO C-13: Laura intenta cancelar orden 2 (vehículo de Jorge) -> 403 Forbidden
+# @no-cookie-jar
+POST http://localhost:8000/ordenes/2/cancelar
+Cookie: {{loginCliente.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 11. CASO C-17: Filtrar órdenes por estado inválido -> 422 Unprocessable
+# @no-cookie-jar
+GET http://localhost:8000/ordenes?estado=NO_EXISTE
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 12. Consultar mis órdenes (Laura) -> 200 OK
+# @no-cookie-jar
+GET http://localhost:8000/mis-ordenes?page=1&size=10
+Cookie: {{loginCliente.response.headers.Set-Cookie}}
+Accept: application/json

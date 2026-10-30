@@ -1,0 +1,71 @@
+### 1. Crear nuevo cliente -> 201 Created
+POST http://localhost:8000/clientes
+Content-Type: application/json
+
+{
+  "usuario_id": null,
+  "nombre": "Carlos Santoro",
+  "documento": "28999888",
+  "telefono": "1122334455"
+}
+
+###
+
+### 2. Intentar crear cliente con documento duplicado -> 409 Conflict
+POST http://localhost:8000/clientes
+Content-Type: application/json
+
+{
+  "usuario_id": null,
+  "nombre": "Otro Cliente",
+  "documento": "30111222",
+  "telefono": "1100000000"
+}
+
+###
+
+### 3. Obtener cliente con sus vehículos (sin N+1) -> 200 OK
+GET http://localhost:8000/clientes/1
+Accept: application/json
+
+###
+
+### 4. Obtener cliente inexistente -> 404 Not Found
+GET http://localhost:8000/clientes/9999
+Accept: application/json
+
+###
+
+### 5. Registrar vehículo a cliente existente -> 201 Created
+POST http://localhost:8000/clientes/1/vehiculos
+Content-Type: application/json
+
+{
+  "patente": "XY999ZZ",
+  "marca": "Peugeot",
+  "modelo": "208",
+  "anio": 2022
+}
+
+###
+
+### 6. Intentar registrar vehículo con patente activa duplicada -> 409 Conflict
+POST http://localhost:8000/clientes/1/vehiculos
+Content-Type: application/json
+
+{
+  "patente": "AB123CD",
+  "marca": "Toyota",
+  "modelo": "Yaris",
+  "anio": 2021
+}
+
+###
+
+### 7. Intentar dar de baja vehículo con órdenes abiertas (Laura auto 1) -> 409 Conflict
+DELETE http://localhost:8000/vehiculos/1
+
+###
+
+### 8. Dar de baja vehículo sin órdenes abiertas -> 204 No Content
+DELETE http://localhost:8000/vehiculos/2

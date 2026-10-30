@@ -1,0 +1,9 @@
+### 1. Health check de vida (no toca la base) -> 200 OK
+GET http://localhost:8000/health/live
+Accept: application/json
+
+###
+
+### 2. Health check de preparación (valida conexión a BD con SELECT 1) -> 200 OK o 503 Service Unavailable
+GET http://localhost:8000/health/ready
+Accept: application/json

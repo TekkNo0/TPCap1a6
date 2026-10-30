@@ -1,0 +1,124 @@
+### ============================================================================
+### CASO C-02: Autorregistro de clientes (RN-02)
+### ============================================================================
+
+### 1. Registro exitoso -> 201 Created
+POST http://localhost:8000/auth/registro
+Content-Type: application/json
+
+{
+  "email": "esteban_cliente@test.com",
+  "nombre": "Esteban Cliente",
+  "password": "PasswordSegura123!",
+  "documento": "34567890",
+  "telefono": "1144332211"
+}
+
+### 2. Intento de registro con correo duplicado -> 409 Conflict
+POST http://localhost:8000/auth/registro
+Content-Type: application/json
+
+{
+  "email": "cliente@example.com",
+  "nombre": "Duplicado Correo",
+  "password": "PasswordSegura123!",
+  "documento": "99999999",
+  "telefono": "1144332211"
+}
+
+### 3. Intento de registro con documento duplicado -> 409 Conflict
+POST http://localhost:8000/auth/registro
+Content-Type: application/json
+
+{
+  "email": "nuevo_doc_dup@test.com",
+  "nombre": "Duplicado Doc",
+  "password": "PasswordSegura123!",
+  "documento": "30111222",
+  "telefono": "1144332211"
+}
+
+
+### ============================================================================
+### CASO C-03: Login y Cookie de Sesión HttpOnly (RN-03)
+### ============================================================================
+
+# @name loginAdmin
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Password123!"
+}
+
+### Consultar perfil con sesión iniciada
+GET http://localhost:8000/auth/yo
+Accept: application/json
+
+### Intentar acceder a ruta protegida sin cookie o con Authorization: Bearer -> 401 Unauthorized
+# @no-cookie-jar
+GET http://localhost:8000/repuestos
+Authorization: Bearer un-token-invalido-que-no-debe-usarse
+Accept: application/json
+
+
+### ============================================================================
+### CASO C-04: Credenciales inválidas y tiempo constante (RN-09)
+### ============================================================================
+
+### Correo existente con contraseña errónea -> 401 Credenciales inválidas
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "ContraseñaIncorrecta"
+}
+
+### Correo inexistente -> 401 Credenciales inválidas (mismo mensaje y tiempo)
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "correo_inexistente_999@test.com",
+  "password": "ContraseñaIncorrecta"
+}
+
+
+### ============================================================================
+### CASO C-09: Cambio obligatorio de contraseña
+### ============================================================================
+
+# @name loginNuevo
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "nuevo@example.com",
+  "password": "Password123!"
+}
+
+### Intento de acceder a repuestos con cambio obligatorio pendiente -> 403 Forbidden
+GET http://localhost:8000/repuestos
+Accept: application/json
+
+### Cambio de contraseña exitoso -> 200 OK y cookie renovada
+POST http://localhost:8000/auth/cambiar-password
+Content-Type: application/json
+
+{
+  "password_actual": "Password123!",
+  "password_nueva": "MiNuevaPassword456!"
+}
+
+### Reintento de acceso a repuestos tras el cambio -> 200 OK
+GET http://localhost:8000/repuestos
+Accept: application/json
+
+
+### ============================================================================
+### Cierre de sesión (Logout)
+### ============================================================================
+
+POST http://localhost:8000/auth/logout

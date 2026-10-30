@@ -1,0 +1,99 @@
+### ============================================================================
+### CASO C-07 y C-08: Roles, Revocación en sesión viva y Autoprotección (RN-04 / RN-05)
+### ============================================================================
+
+### 1. Iniciar sesión como ADMIN
+# @name loginAdmin
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 2. Iniciar sesión como RECEPCIÓN
+# @name loginRecepcion
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "recepcion@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### 3. Recepción consulta repuestos antes de la revocación -> 200 OK
+# @no-cookie-jar
+GET http://localhost:8000/repuestos
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 4. Admin intenta asignar rol con vencimiento en el pasado -> 422 Unprocessable
+# @no-cookie-jar
+POST http://localhost:8000/usuarios/3/roles
+Cookie: {{loginAdmin.response.headers.Set-Cookie}}
+Content-Type: application/json
+
+{
+  "rol": "MECANICO",
+  "vence_en": "2020-01-01T00:00:00Z"
+}
+
+###
+
+### 5. Admin intenta asignar rol con vencimiento sin zona horaria -> 422 Unprocessable
+# @no-cookie-jar
+POST http://localhost:8000/usuarios/3/roles
+Cookie: {{loginAdmin.response.headers.Set-Cookie}}
+Content-Type: application/json
+
+{
+  "rol": "MECANICO",
+  "vence_en": "2030-01-01T10:00:00"
+}
+
+###
+
+### 6. Admin revoca el rol RECEPCION del usuario 3 -> 200 OK
+# @no-cookie-jar
+DELETE http://localhost:8000/usuarios/3/roles/RECEPCION
+Cookie: {{loginAdmin.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 7. Recepción intenta consultar repuestos inmediatamente con la misma cookie -> 403 Forbidden (RN-04)
+# @no-cookie-jar
+GET http://localhost:8000/repuestos
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 8. /auth/yo muestra que en BD no tiene el rol, pero el token sí lo dice
+# @no-cookie-jar
+GET http://localhost:8000/auth/yo
+Cookie: {{loginRecepcion.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 9. Autoprotección: Admin intenta revocarse su propio rol ADMIN -> 409 Conflict (RN-05)
+# @no-cookie-jar
+DELETE http://localhost:8000/usuarios/1/roles/ADMIN
+Cookie: {{loginAdmin.response.headers.Set-Cookie}}
+Accept: application/json
+
+###
+
+### 10. Consultar eventos de seguridad paginados (ADMIN) -> 200 OK
+# @no-cookie-jar
+GET http://localhost:8000/eventos?page=1&size=20
+Cookie: {{loginAdmin.response.headers.Set-Cookie}}
+Accept: application/json

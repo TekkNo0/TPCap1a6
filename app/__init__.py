@@ -1,0 +1,1 @@
+"""Aplicación Principal Taller Mecánico."""

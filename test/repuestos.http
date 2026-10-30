@@ -1,0 +1,95 @@
+### 1. Listar repuestos (envoltorio estándar)
+GET http://localhost:8000/repuestos?page=1&size=20
+Accept: application/json
+
+###
+
+### 2. Buscar repuesto por descripción con parámetros ligados
+GET http://localhost:8000/repuestos?q=aceite&page=1&size=20
+Accept: application/json
+
+###
+
+### 3. Obtener repuesto por ID -> 200 OK
+GET http://localhost:8000/repuestos/1
+Accept: application/json
+
+###
+
+### 4. Obtener repuesto inexistente -> 404 Not Found
+GET http://localhost:8000/repuestos/9999
+Accept: application/json
+
+###
+
+### 5. Crear nuevo repuesto con stock inicial -> 201 Created
+POST http://localhost:8000/repuestos
+Content-Type: application/json
+
+{
+  "codigo": "REP-99",
+  "descripcion": "Correa de distribución",
+  "precio": "15000.00",
+  "stock_inicial": 8
+}
+
+###
+
+### 6. Intentar crear repuesto duplicado -> 409 Conflict
+POST http://localhost:8000/repuestos
+Content-Type: application/json
+
+{
+  "codigo": "REP-01",
+  "descripcion": "Filtro duplicado",
+  "precio": "5000.00",
+  "stock_inicial": 1
+}
+
+###
+
+### 7. PATCH parcial: actualizar precio y registrar línea de historial de precio -> 200 OK
+PATCH http://localhost:8000/repuestos/1
+Content-Type: application/json
+
+{
+  "precio": "9200.00"
+}
+
+###
+
+### 8. Intento de editar stock por PATCH -> 422 Unprocessable (extra="forbid")
+PATCH http://localhost:8000/repuestos/1
+Content-Type: application/json
+
+{
+  "stock": 100
+}
+
+###
+
+### 9. Reponer stock por endpoint formal -> 200 OK
+POST http://localhost:8000/repuestos/1/reponer
+Content-Type: application/json
+
+{
+  "cantidad": 5,
+  "motivo": "Compra a proveedor mayorista"
+}
+
+###
+
+### 10. Consultar movimientos de stock del repuesto
+GET http://localhost:8000/repuestos/1/movimientos
+Accept: application/json
+
+###
+
+### 11. Consultar historial de cambios de precio del repuesto
+GET http://localhost:8000/repuestos/1/precios
+Accept: application/json
+
+###
+
+### 12. Dar de baja lógica a un repuesto -> 204 No Content
+DELETE http://localhost:8000/repuestos/1
