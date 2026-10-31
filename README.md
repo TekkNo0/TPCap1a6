@@ -5,6 +5,19 @@ API asincrónica construida con **FastAPI**, **SQLModel**, **SQLAlchemy 2.0 (asi
 
 ---
 
+## 👥 Información del Grupo
+
+- **Nombre del Grupo:** Los Pythons
+- **Integrantes:**
+  - Máximo Monardez
+  - Facundo Chacón
+  - Joaquín Méndez
+  - Tiago Guillot
+  - Thiago Oviedo
+  - Matías Ruiz
+
+---
+
 ## 🚀 Requisitos Previos
 
 - **Python:** 3.12 o superior (probado en Python 3.14).
@@ -16,8 +29,8 @@ API asincrónica construida con **FastAPI**, **SQLModel**, **SQLAlchemy 2.0 (asi
 
 ### 1. Clonar el repositorio y ubicarse en el directorio
 ```bash
-git clone <url-del-repositorio>
-cd Antigravity
+git clone https://github.com/TekkNo0/TPCap1a6.git
+cd TPcap1-6
 ```
 
 ### 2. Crear y activar el entorno virtual
@@ -154,11 +167,11 @@ Orden con 4 ítems: 6 consultas ejecutadas
 
 ## 📁 Archivos de Prueba Interactiva (REST Client)
 
-En la carpeta [`test/`](file:///c:/Users/maxim/Desktop/Antigravity/test) se encuentran los casos interactivos para ejecutar directamente desde el editor:
-- [`test/health.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/health.http): Verificación de estado `/health/live` y `/health/ready`.
-- [`test/auth.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/auth.http): Registro, login con cookies HttpOnly, errores de temporización y cambio obligatorio de contraseña.
-- [`test/usuarios.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/usuarios.http): Gestión de roles, revocación en vivo multi-sesión (`# @no-cookie-jar`), autoprotección y eventos de auditoría.
-- [`test/repuestos.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/repuestos.http): CRUD con búsqueda parametrizada, reposición y protección de stock en PATCH.
-- [`test/clientes.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/clientes.http): Gestión de clientes, vehículos y borrado con validación de órdenes abiertas.
-- [`test/ordenes.http`](file:///c:/Users/maxim/Desktop/Antigravity/test/ordenes.http): Creación de órdenes con copia de precio, transiciones de estado, rechazo por falta de stock y cancelación por dueño o personal.
-- [`test/solo_agregado.sql`](file:///c:/Users/maxim/Desktop/Antigravity/test/solo_agregado.sql): Demostración en SQL de la inmutabilidad de tablas y claves foráneas.
+En la carpeta [`test/`](test/) se encuentran los casos interactivos para ejecutar directamente desde el editor:
+- [`test/health.http`](test/health.http): Verificación de estado `/health/live` y `/health/ready`.
+- [`test/auth.http`](test/auth.http): Registro, login con cookies HttpOnly, errores de temporización y cambio obligatorio de contraseña.
+- [`test/usuarios.http`](test/usuarios.http): Gestión de roles, revocación en vivo multi-sesión (`# @no-cookie-jar`), autoprotección y eventos de auditoría.
+- [`test/repuestos.http`](test/repuestos.http): CRUD con búsqueda parametrizada, reposición y protección de stock en PATCH.
+- [`test/clientes.http`](test/clientes.http): Gestión de clientes, vehículos y borrado con validación de órdenes abiertas.
+- [`test/ordenes.http`](test/ordenes.http): Creación de órdenes con copia de precio, transiciones de estado, rechazo por falta de stock y cancelación por dueño o personal.
+- [`test/solo_agregado.sql`](test/solo_agregado.sql): Demostración en SQL de la inmutabilidad de tablas y claves foráneas.
